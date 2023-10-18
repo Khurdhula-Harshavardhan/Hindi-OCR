@@ -6,6 +6,9 @@ __pycache__/
 # C extensions
 *.so
 
+#I should also ignore the dataset folder, it can be considered as a large file.:
+/datasets
+
 # Distribution / packaging
 .Python
 build/
