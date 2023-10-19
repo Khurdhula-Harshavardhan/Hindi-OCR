@@ -3,6 +3,10 @@ Module Description: This module serves an API, for using CNN and a RNN.
 """
 from joblib import load
 import base64
+import numpy as np
+from PIL import Image
+from io import BytesIO
+
 
 class Image_Processor():
     """
@@ -13,10 +17,28 @@ class Image_Processor():
     Attributes:
 
         raw_image_data (base64): Has encoded image information.
+        image_data (bytes): Stores decoded bytes.
+        image (np.array): Stores the image in np array form.
     """
     raw_image_data = None
-    def __init__(self) -> None:
-        pass
+    image_data = None
+    image = None
+
+    def read_image(self, image_data: bytes) -> float:
+        """
+        Image_Processor.read_image(): takes in the encoded image data and then converts into an numpy array for further processing of the image.
+        """
+        try:
+            self.raw_image_data = image_data
+            self.image_data = base64.b64decode(self.raw_image_data)
+            self.image = Image.open(BytesIO(image_data))
+            self.image = np.array(self.image)
+
+            return self.image
+        except Exception as e:
+            return {"Result": "Failed",
+                    "ERROR": str(e),
+                    "ERR at": "hindi_ocr.Image_Processor.read_image"}
 
 class CNN():
     """
