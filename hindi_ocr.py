@@ -103,9 +103,18 @@ class CNN(Image_Processor):
             return {"Result": "Failed",
                     "ERROR": str(e),
                     "ERR at": "hindi_ocr.CNN.(PRIVATE_METHOD)"}
-obj = CNN()
-path = "ManualTests/La.png"
-with open(path, "rb") as image_file:
-    encoded_image = base64.b64encode(image_file.read()).decode('utf-8')
 
-print(obj.extract_character(encoded_image))
+
+class RNN(Image_Processor):
+    """
+    The RNN class is the API for the previously trained model. Which uses RNN.joblib that was trained previously by @Harsha Vardhan Khurdula.
+    """
+    pass
+
+def test_cnn():
+    obj = CNN()
+    path = "ManualTests/La.png"
+    with open(path, "rb") as image_file:
+        encoded_image = base64.b64encode(image_file.read()).decode('utf-8')
+
+    print(obj.extract_character(encoded_image))
