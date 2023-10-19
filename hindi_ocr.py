@@ -48,6 +48,7 @@ class CNN(Image_Processor):
     cnn = None
     base_image_data = None
     image = None
+
     def __init__(self) -> None:
         """
         The constructor should initialize the model.
@@ -69,8 +70,42 @@ class CNN(Image_Processor):
         try:
             self.base_image_data = image
             self.image = self.read_image(image_data= self.base_image_data)
+            self.image = self._preprocess_image(self.image)
+            predictions = self.cnn.predict(self.image)
+            predicted_class = np.argmax(predictions[0])
 
+            return {
+                "Result": "Success",
+                "Model": "CNN",
+                "Type": "Sequential",
+                "Prediction": predicted_class,
+                "Confidences": [str(x) for x in predictions[0]],
+                "Total Confidences": len(predictions[0])
+            }
         except Exception as e:
-            pass
-obj = CNN()
+            return {"Result": "Failed",
+                    "ERROR": str(e),
+                    "ERR at": "hindi_ocr.CNN.extract_character"}
+        
+    def _preprocess_image(self, img: np.ndarray)-> np.ndarray:
+        """
+        Predict_with_Preprocessing is an private method that preprocesses image for classification
+        """
+        try:
 
+            img_array = image.img_to_array(img)
+            img_array /= 255.
+            img_array_reshaped = np.expand_dims(img_array, axis=0)
+            
+            
+            return img_array_reshaped
+        except Exception as e:
+            return {"Result": "Failed",
+                    "ERROR": str(e),
+                    "ERR at": "hindi_ocr.CNN.(PRIVATE_METHOD)"}
+obj = CNN()
+path = "ManualTests/La.png"
+with open(path, "rb") as image_file:
+    encoded_image = base64.b64encode(image_file.read()).decode('utf-8')
+
+print(obj.extract_character(encoded_image))
