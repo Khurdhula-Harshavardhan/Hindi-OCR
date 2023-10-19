@@ -2,14 +2,19 @@
 Module Description: This module serves an API, for using CNN and a RNN.
 """
 from joblib import load
+import base64
+
+class Image_Processor():
+    pass
 
 class CNN():
     """
     The CNN class is the API for the previously trained model. Which uses CNN.joblib that was trained previously by @Harsha Vardhan Khurdula.
     """
     cnn = None
+    base_image_data = None
 
-    def __init__(self) -> None:
+    def __init__(self, image: base64) -> None:
         """
         The constructor should initialize the model.
         """
