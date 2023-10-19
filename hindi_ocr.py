@@ -5,7 +5,18 @@ from joblib import load
 import base64
 
 class Image_Processor():
-    pass
+    """
+    This Module acts as a middleware between the api and the model.
+    Specifically the models should use this class to read image information,
+    Get binary image data which is needed for their processing.
+
+    Attributes:
+
+        raw_image_data (base64): Has encoded image information.
+    """
+    raw_image_data = None
+    def __init__(self) -> None:
+        pass
 
 class CNN():
     """
