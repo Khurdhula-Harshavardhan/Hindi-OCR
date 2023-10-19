@@ -6,7 +6,7 @@ import base64
 import numpy as np
 from PIL import Image
 from io import BytesIO
-
+import json
 
 class Image_Processor():
     """
@@ -40,14 +40,14 @@ class Image_Processor():
                     "ERROR": str(e),
                     "ERR at": "hindi_ocr.Image_Processor.read_image"}
 
-class CNN():
+class CNN(Image_Processor):
     """
     The CNN class is the API for the previously trained model. Which uses CNN.joblib that was trained previously by @Harsha Vardhan Khurdula.
     """
     cnn = None
     base_image_data = None
 
-    def __init__(self, image: base64) -> None:
+    def __init__(self) -> None:
         """
         The constructor should initialize the model.
         """
@@ -61,6 +61,13 @@ class CNN():
         except FileNotFoundError as e:
             print("[ERROR] The following error occured while trying to load the model: "+str(e))
 
-
+    def extract_character(self, image: bytes) -> dict:
+        """
+        Extract character is a CNN method that should accept bytes image data and then makes prediction for it. 
+        """
+        try:
+            pass
+        except Exception as e:
+            pass
 obj = CNN()
 
