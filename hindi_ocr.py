@@ -7,6 +7,7 @@ import numpy as np
 from PIL import Image
 from io import BytesIO
 import json
+from tensorflow.keras.preprocessing import image
 
 class Image_Processor():
     """
@@ -31,8 +32,8 @@ class Image_Processor():
         try:
             self.raw_image_data = image_data
             self.image_data = base64.b64decode(self.raw_image_data)
-            self.image = Image.open(BytesIO(image_data))
-            self.image = np.array(self.image)
+            self.image = image.img_to_array(image.load_img(BytesIO(self.image_data), target_size=(32, 32)))
+            
 
             return self.image
         except Exception as e:
@@ -46,7 +47,7 @@ class CNN(Image_Processor):
     """
     cnn = None
     base_image_data = None
-
+    image = None
     def __init__(self) -> None:
         """
         The constructor should initialize the model.
@@ -66,7 +67,9 @@ class CNN(Image_Processor):
         Extract character is a CNN method that should accept bytes image data and then makes prediction for it. 
         """
         try:
-            pass
+            self.base_image_data = image
+            self.image = self.read_image(image_data= self.base_image_data)
+
         except Exception as e:
             pass
 obj = CNN()
