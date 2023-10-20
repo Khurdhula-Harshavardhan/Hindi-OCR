@@ -116,8 +116,8 @@ class CNN(Image_Processor):
                 "Model": "CNN",
                 "Type": "Sequential",
                 "Prediction": self.original_characters.get(self.labels.get(str(predicted_class), "NaN")),
-                "Confidences": confidences,
-                "Total Confidences": len(predictions[0])
+                "Confidence": predictions[0][predicted_class],
+                "Other Confidences": confidences
             }
         except Exception as e:
             return {"Result": "Failed",
@@ -196,11 +196,11 @@ class RNN(Image_Processor):
             confidences = self.get_confidences(predictions=predictions[0])
             return {
                 "Result": "Success",
-                "Model": "CNN",
+                "Model": "RNN",
                 "Type": "Sequential",
                 "Prediction": self.original_characters.get(self.labels.get(str(predicted_class), "NaN")),
-                "Confidences": confidences,
-                "Total Confidences": len(predictions[0])
+                "Confidence": predictions[0][predicted_class],
+                "Other Confidences": confidences
             }
         except Exception as e:
             return {"Result": "Failed",
@@ -223,21 +223,4 @@ class RNN(Image_Processor):
             return {"Result": "Failed",
                     "ERROR": str(e),
                     "ERR at": "hindi_ocr.RNN.(PRIVATE_METHOD)"}
-
-def test_cnn():
-    obj = CNN()
-    path = "ManualTests/la_better.PNG"
-    with open(path, "rb") as image_file:
-        encoded_image = base64.b64encode(image_file.read()).decode('utf-8')
-
-    print(obj.extract_character(encoded_image))
-
-def test_rnn():
-    obj = RNN()
-    path = "ManualTests/La_better.png"
-    with open(path, "rb") as image_file:
-        encoded_image = base64.b64encode(image_file.read()).decode('utf-8')
-
-    print(obj.extract_character(encoded_image))
-test_cnn()
-test_rnn()
+        
