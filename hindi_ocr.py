@@ -64,6 +64,7 @@ class CNN(Image_Processor):
     cnn = None
     base_image_data = None
     image = None
+    labels = None
 
     def __init__(self) -> None:
         """
@@ -71,7 +72,8 @@ class CNN(Image_Processor):
         """
         try:
             self.cnn = load("Models/CNN.joblib")
-
+            self.labels = json.load(open('Models/cnn_labels.json', 'r'))
+            print(self.labels)
             if self.cnn is None:
                 raise FileNotFoundError("Cannot load pretrained CNN, please check /Models/ to verify if the model does exist.")
             else:
@@ -94,7 +96,7 @@ class CNN(Image_Processor):
                 "Result": "Success",
                 "Model": "CNN",
                 "Type": "Sequential",
-                "Prediction": predicted_class,
+                "Prediction": self.labels.get(str(predicted_class), "NaN"),
                 "Confidences": [str(x) for x in predictions[0]],
                 "Total Confidences": len(predictions[0])
             }
@@ -128,15 +130,13 @@ class RNN(Image_Processor):
     rnn = None
     base_image_data = None
     image = None
-
     def __init__(self) -> None:
         """
         The constructor should initialize the model.
         """
         try:
             self.rnn = load("Models/RNN.joblib")
-
-            if self.rnn is None:
+            if self.rnn is None:   
                 raise FileNotFoundError("Cannot load pretrained RNN, please check /Models/ to verify if the model does exist.")
             else:
                 print("[SUCCESS] The pretrained RNN model has been loaded successfully.")
@@ -186,7 +186,7 @@ class RNN(Image_Processor):
 
 def test_cnn():
     obj = CNN()
-    path = "ManualTests/La.png"
+    path = "ManualTests/la_better.PNG"
     with open(path, "rb") as image_file:
         encoded_image = base64.b64encode(image_file.read()).decode('utf-8')
 
@@ -199,5 +199,5 @@ def test_rnn():
         encoded_image = base64.b64encode(image_file.read()).decode('utf-8')
 
     print(obj.extract_character(encoded_image))
-
+test_cnn()
 test_rnn()
