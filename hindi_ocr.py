@@ -65,7 +65,7 @@ class CNN(Image_Processor):
     base_image_data = None
     image = None
     labels = None
-
+    original_characters = None
     def __init__(self) -> None:
         """
         The constructor should initialize the model.
@@ -73,7 +73,8 @@ class CNN(Image_Processor):
         try:
             self.cnn = load("Models/CNN.joblib")
             self.labels = json.load(open('Models/cnn_labels.json', 'r'))
-            print(self.labels)
+            self.original_characters = json.load(open('Models/labels.json', 'r', encoding="utf-8"))
+            
             if self.cnn is None:
                 raise FileNotFoundError("Cannot load pretrained CNN, please check /Models/ to verify if the model does exist.")
             else:
@@ -96,8 +97,7 @@ class CNN(Image_Processor):
                 "Result": "Success",
                 "Model": "CNN",
                 "Type": "Sequential",
-                "Prediction": self.labels.get(str(predicted_class), "NaN"),
-                "Confidences": [str(x) for x in predictions[0]],
+                "Prediction": self.original_characters.get(self.labels.get(str(predicted_class), "NaN")),
                 "Total Confidences": len(predictions[0])
             }
         except Exception as e:
