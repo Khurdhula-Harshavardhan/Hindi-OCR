@@ -96,7 +96,9 @@ class CNN(Image_Processor):
                 self.confidences[hindi_char] = confidence
             return self.confidences
         except Exception as e:
-            pass
+            return {"Result": "Failed",
+                    "ERROR": str(e),
+                    "ERR at": "hindi_ocr.CNN.get_confindences"}
 
     def extract_character(self, image: bytes) -> dict:
         """
@@ -147,18 +149,39 @@ class RNN(Image_Processor):
     rnn = None
     base_image_data = None
     image = None
+    labels = None
+    original_characters = None
+    confidences = None
     def __init__(self) -> None:
         """
         The constructor should initialize the model.
         """
         try:
             self.rnn = load("Models/RNN.joblib")
+            self.labels = json.load(open('Models/rnn_labels.json', 'r'))
+            self.original_characters = json.load(open('Models/labels.json', 'r', encoding="utf-8"))
             if self.rnn is None:   
                 raise FileNotFoundError("Cannot load pretrained RNN, please check /Models/ to verify if the model does exist.")
             else:
                 print("[SUCCESS] The pretrained RNN model has been loaded successfully.")
         except FileNotFoundError as e:
             print("[ERROR] The following error occured while trying to load the model: "+str(e))
+
+    def get_confidences(self, predictions: list) -> dict:
+        """
+        The get_confidences method aims to build a dictionary giving key: value pairs of characters and their confidences for a classification by RNN.
+        """
+        try:
+            self.confidences = dict()
+            for i in range(len(predictions)):
+                confidence = predictions[i]
+                hindi_char = self.original_characters.get(self.labels.get(str(i)))
+                self.confidences[hindi_char] = confidence
+            return self.confidences
+        except Exception as e:
+            return {"Result": "Failed",
+                    "ERROR": str(e),
+                    "ERR at": "hindi_ocr.RNN.get_confindences"}
 
     def extract_character(self, image: bytes) -> dict:
         """
@@ -170,13 +193,13 @@ class RNN(Image_Processor):
             self.image = self._preprocess_image(self.image)
             predictions = self.rnn.predict(self.image)
             predicted_class = np.argmax(predictions[0])
-
+            confidences = self.get_confidences(predictions=predictions[0])
             return {
                 "Result": "Success",
-                "Model": "RNN",
+                "Model": "CNN",
                 "Type": "Sequential",
-                "Prediction": predicted_class,
-                "Confidences": [str(x) for x in predictions[0]],
+                "Prediction": self.original_characters.get(self.labels.get(str(predicted_class), "NaN")),
+                "Confidences": confidences,
                 "Total Confidences": len(predictions[0])
             }
         except Exception as e:
@@ -199,7 +222,7 @@ class RNN(Image_Processor):
         except Exception as e:
             return {"Result": "Failed",
                     "ERROR": str(e),
-                    "ERR at": "hindi_ocr.CNN.(PRIVATE_METHOD)"}
+                    "ERR at": "hindi_ocr.RNN.(PRIVATE_METHOD)"}
 
 def test_cnn():
     obj = CNN()
@@ -211,7 +234,7 @@ def test_cnn():
 
 def test_rnn():
     obj = RNN()
-    path = "ManualTests/La.png"
+    path = "ManualTests/La_better.png"
     with open(path, "rb") as image_file:
         encoded_image = base64.b64encode(image_file.read()).decode('utf-8')
 
