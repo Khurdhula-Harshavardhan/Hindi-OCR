@@ -66,6 +66,8 @@ class CNN(Image_Processor):
     image = None
     labels = None
     original_characters = None
+    confidences = None
+
     def __init__(self) -> None:
         """
         The constructor should initialize the model.
@@ -82,6 +84,20 @@ class CNN(Image_Processor):
         except FileNotFoundError as e:
             print("[ERROR] The following error occured while trying to load the model: "+str(e))
 
+    def get_confidences(self, predictions: list) -> dict:
+        """
+        The get_confidences method aims to build a dictionary giving key: value pairs of characters and their confidences for a classification by CNN.
+        """
+        try:
+            self.confidences = dict()
+            for i in range(len(predictions)):
+                confidence = predictions[i]
+                hindi_char = self.original_characters.get(self.labels.get(str(i)))
+                self.confidences[hindi_char] = confidence
+            return self.confidences
+        except Exception as e:
+            pass
+
     def extract_character(self, image: bytes) -> dict:
         """
         Extract character is a CNN method that should accept bytes image data and then makes prediction for it. 
@@ -92,12 +108,13 @@ class CNN(Image_Processor):
             self.image = self._preprocess_image(self.image)
             predictions = self.cnn.predict(self.image)
             predicted_class = np.argmax(predictions[0])
-
+            confidences = self.get_confidences(predictions=predictions[0])
             return {
                 "Result": "Success",
                 "Model": "CNN",
                 "Type": "Sequential",
                 "Prediction": self.original_characters.get(self.labels.get(str(predicted_class), "NaN")),
+                "Confidences": confidences,
                 "Total Confidences": len(predictions[0])
             }
         except Exception as e:
